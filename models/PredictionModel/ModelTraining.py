@@ -111,7 +111,6 @@ class ModelTrainig:
         train_time = (datetime.now() - start_time).total_seconds()
         print(f"Modelo treinado em {train_time:.2f} segundos!") # Levando 5mn sem alteracao da quantidade
 
-        rf_intensity.fit(X_train, y_train)
 
         with open("fire_model.pkl", "wb") as f:
             pk.dump(rf_intensity, f)
