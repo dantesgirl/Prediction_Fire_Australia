@@ -155,3 +155,7 @@ class ModelTrainig:
         print("\nTop caracteristicas + importantes:")
         for idx, row in feature_importance.head(10).iterrows():
             print(f"  {row["feature"]:.<25} {row["importance"]:.4f}")
+
+if __name__ == "__main__":
+    trainer = ModelTrainig()
+    trainer.training()
