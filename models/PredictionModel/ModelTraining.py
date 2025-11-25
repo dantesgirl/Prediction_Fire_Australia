@@ -111,7 +111,6 @@ class ModelTrainig:
         train_time = (datetime.now() - start_time).total_seconds()
         print(f"Modelo treinado em {train_time:.2f} segundos!") # Levando 5mn sem alteracao da quantidade
 
-        rf_intensity.fit(X_train, y_train)
 
         with open("fire_model.pkl", "wb") as f:
             pk.dump(rf_intensity, f)
@@ -156,3 +155,7 @@ class ModelTrainig:
         print("\nTop caracteristicas + importantes:")
         for idx, row in feature_importance.head(10).iterrows():
             print(f"  {row["feature"]:.<25} {row["importance"]:.4f}")
+
+if __name__ == "__main__":
+    trainer = ModelTrainig()
+    trainer.training()
