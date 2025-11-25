@@ -14,16 +14,13 @@ class PredictModel:
         print(f"Carregando modelo de: {model_path}")
         try:
             with open(model_path, "rb") as f:
-                model_data = pickle.load(f)  # Carrega o dicionário
+                model_data = pickle.load(f)
             
-            # Extrai o modelo do dicionário
             if isinstance(model_data, dict):
-                model = model_data['model']
-            else:
-                model = model_data  # Compatibilidade com modelos antigos
-                
-            print("Modelo carregado.")
-            return model
+                print("Modelo carregado.")
+                return model_data
+            
+            return {"model": model_data}
         except Exception as e:
             print(f"Erro ao carregar modelo: {e}")
             exit()
@@ -82,7 +79,8 @@ class PredictModel:
             "satellite_encoded": [satellite_encoded]
         })
         
-        rf_intensity = self.load_model()
+        model_data = self.load_model()
+        rf_intensity = model_data["model"]
 
         prediction = rf_intensity.predict(input_data)[0]
         proba = rf_intensity.predict_proba(input_data)[0]
