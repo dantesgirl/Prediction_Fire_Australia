@@ -63,8 +63,8 @@ class ModelTrainig:
         print(f"Intensidade do fogo: FRP > {frp_median:.2f} MW")
         print(f"\nDistribuição da intendisade do fogo:")
         print(df["fire_intensity"].value_counts())
-        print(f"  0 (Baixo):  {(df["fire_intensity"]==0).sum():,} fires")
-        print(f"  1 (Alto): {(df["fire_intensity"]==1).sum():,} fires")
+        print(f"  0 (Baixo):  {(df['fire_intensity']==0).sum():,} fires")
+        print(f"  1 (Alto): {(df['fire_intensity']==1).sum():,} fires")
 
         # Separação para o Machine Learning
         df_clean = df.dropna(subset=["frp", "brightness", "bright_t31", "confidence"])
@@ -109,12 +109,7 @@ class ModelTrainig:
         start_time = datetime.now()
         rf_intensity.fit(X_train, y_train)
         train_time = (datetime.now() - start_time).total_seconds()
-        print(f"Modelo treinado em {train_time:.2f} segundos!") # Levando 5mn sem alteracao da quantidade
-
-
-        with open("fire_model.pkl", "wb") as f:
-            pk.dump(rf_intensity, f)
-        print("\n Modelo salvo como 'fire_model.pkl'")
+        print(f"Modelo treinado em {train_time:.2f} segundos!")
 
         # Predições
         y_pred = rf_intensity.predict(X_test)
@@ -147,15 +142,31 @@ class ModelTrainig:
         print(f"  Precisão(Alta): {precision_high*100:.2f}%")
         print(f"  Recall (Alta):    {recall_high*100:.2f}%")
 
+        # Calculando feature importance
         feature_importance = pd.DataFrame({
-            "feature": features,
-            "importance": rf_intensity.feature_importances_
-        }).sort_values("importance", ascending=False)
+            'feature': features,
+            'importance': rf_intensity.feature_importances_
+        }).sort_values('importance', ascending=False)
 
         print("\nTop caracteristicas + importantes:")
         for idx, row in feature_importance.head(10).iterrows():
-            print(f"  {row["feature"]:.<25} {row["importance"]:.4f}")
+            print(f"  {row['feature']:.<25} {row['importance']:.4f}")
+
+        # SALVA MODELO + VARIÁVEIS (DICIONÁRIO)
+        model_data = {
+            'model': rf_intensity,
+            'df_clean': df_clean,
+            'feature_importance': feature_importance,
+            'accuracy': accuracy,
+            'confusion_matrix': cm,
+            'features': features
+        }
+        
+        with open('fire_model.pkl', 'wb') as f:
+            pk.dump(model_data, f)
+        
+        print("\nModelo e dados salvos em 'fire_model.pkl'")
 
 if __name__ == "__main__":
     trainer = ModelTrainig()
-
+    trainer.training()

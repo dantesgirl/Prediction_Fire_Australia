@@ -14,7 +14,14 @@ class PredictModel:
         print(f"Carregando modelo de: {model_path}")
         try:
             with open(model_path, "rb") as f:
-                model = pickle.load(f)
+                model_data = pickle.load(f)  # Carrega o dicionário
+            
+            # Extrai o modelo do dicionário
+            if isinstance(model_data, dict):
+                model = model_data['model']
+            else:
+                model = model_data  # Compatibilidade com modelos antigos
+                
             print("Modelo carregado.")
             return model
         except Exception as e:
