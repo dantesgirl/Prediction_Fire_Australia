@@ -14,12 +14,19 @@ class PredicitonsDashboards:
             with open("fire_model.pkl", "rb") as f:
                 model_data = pk.load(f)
 
-            print("AAAAAAAAAAAAAAAAAAAAAAAAAA")
-            print(model_data)
-            df_clean = model_data["df_clean"]
-            feature_importance = model_data["feature_importance"]
-            accuracy = model_data["accuracy"]
-            cm = model_data["confusion_matrix"]
+            print("Dados do modelo carregados!")
+            print(f"Tipo: {type(model_data)}")
+            
+            # Se for dicionário, extrai os dados
+            if isinstance(model_data, dict):
+                df_clean = model_data.get("df_clean")
+                feature_importance = model_data.get("feature_importance")
+                accuracy = model_data.get("accuracy")
+                cm = model_data.get("confusion_matrix")
+            else:
+                # Modelo antigo - só tem o modelo mesmo
+                print("Aviso: Modelo antigo detectado (sem dados extras)")
+                return None, None, None, None
 
             print("Dados carregados com sucesso")
             print(f"Dataset: {len(df_clean):,} registros")
@@ -43,7 +50,13 @@ class PredicitonsDashboards:
     def predictions_dashboards(self):
         df_clean, feature_importance, accuracy, cm = self.get_training_data()
 
-        print(feature_importance)
+        # Verifica se conseguiu carregar os dados
+        if df_clean is None or feature_importance is None:
+            st.error("❌ Erro ao carregar dados do modelo!")
+            st.warning("Por favor, treine o modelo novamente executando: `python models/PredictionModel/ModelTraining.py`")
+            return
+
+        print(f"Feature importance carregado: {type(feature_importance)}")
 
         st.title("📈 Resultados da Predição")
         st.divider()
@@ -100,12 +113,12 @@ class PredicitonsDashboards:
         )
 
         monthly_fires = df_clean.groupby("month").size()
-        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        months_list = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
         high_risk_months = monthly_fires[monthly_fires > monthly_fires.median()]
         
         df_month = pd.DataFrame({
-            "month": months,
+            "month": months_list,
             "fires": monthly_fires,
             "risk": ["Alto" if i+1 in high_risk_months.index else "Baixo" for i in range(12)]
         })
@@ -116,8 +129,8 @@ class PredicitonsDashboards:
             y="fires",
             color="risk",
             color_discrete_map={
-                "High": "#e63946",
-                "Low": "#f1fa8c"
+                "Alto": "#e63946",
+                "Baixo": "#f1fa8c"
             },
             title="Distribuição de Incêndios por mês",
             labels={"month": "Mês", "fires": "Incêndios", "risk": "Risco"}
@@ -210,33 +223,33 @@ class PredicitonsDashboards:
             col1, col2 = st.columns([1, 1])
 
             with col1:  
-                st.plotly_chart(fig1, width = "stretch")
+                st.plotly_chart(fig1, use_container_width=True)
                 
             with col2:
-                st.plotly_chart(fig2, width = "stretch")
+                st.plotly_chart(fig2, use_container_width=True)
         
         with tab2:
             col1, col2 = st.columns([1, 2])
 
             with col1:
                 st.markdown("**Ocorrencias por mês:**")
-                for month, fires in monthly_fires.items():
-                    st.write(f"  {months[month-1]:>3} - {fires:>8,} Incêndios ({fires/len(self.df_clean)*100:>5.2f}%)")
+                for month_num, fires in monthly_fires.items():
+                    st.write(f"  {months_list[month_num-1]:>3} - {fires:>8,} Incêndios ({fires/len(df_clean)*100:>5.2f}%)")
             
             with col2:
-                st.plotly_chart(fig3, width = "stretch")
+                st.plotly_chart(fig3, use_container_width=True)
             
         with tab3:
-            st.plotly_chart(fig6, width = "stretch")
+            st.plotly_chart(fig6, use_container_width=True)
             
             col1, col2 = st.columns([1, 2])
             
             with col1:
                 st.markdown("**Padrões do fogo/queimadas por estação:**")
                 for season, data in seasonal_fires.iterrows():
-                    st.write(f"   {seasonal_names[season]:>6}: {data["count"]:>8,} chamas | " + 
-                        f"Intensidade alta: {data["mean"]*100:>5.1f}%")
+                    st.write(f"   {seasonal_names[season]:>6}: {data['count']:>8,} chamas | " + 
+                        f"Intensidade alta: {data['mean']*100:>5.1f}%")
             
             with col2:
-                st.plotly_chart(fig4, width = "stretch")
+                st.plotly_chart(fig4, use_container_width=True)
                 
