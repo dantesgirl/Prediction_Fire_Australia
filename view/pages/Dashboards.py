@@ -5,7 +5,7 @@ import pickle as pk
 import plotly.express as px
 import plotly.graph_objects as go
 
-class PredicitonsDashboards:
+class DashboardsPage:
     def __init__(self, prediction):
         self.prediction = prediction
 
