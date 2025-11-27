@@ -8,6 +8,8 @@ import plotly.graph_objects as go
 class DashboardsPage:
     def __init__(self, prediction):
         self.prediction = prediction
+    def run(self):
+        self.predictions_dashboards()
 
     def get_training_data(self):
         try: 
