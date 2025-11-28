@@ -60,10 +60,7 @@ class DashboardsPage(BasePage):
     def run(self):
         self.apply_config()
         
-        if "df" not in st.session_state:
-            st.session_state.df = Datas().importDatasetsOnFirms()
-            
-        df_origin = st.session_state.df
+        df_origin = self.df
 
         def dataProcesing(df):
             conditions = [
