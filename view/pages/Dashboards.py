@@ -130,4 +130,4 @@ class DashboardsPage(BasePage):
             (df["latitude"] >= info_estado["lat_min"]) &
             (df["latitude"] <= info_estado["lat_max"]) &
             (df["longitude"] >= info_estado["lon_min"]) &
-            (df["longitude"] <= info_estado["lon_max"])
+            (df["longitude"] <= info_estado["lon_max"])]
