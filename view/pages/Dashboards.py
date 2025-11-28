@@ -6,7 +6,6 @@ import streamlit as st # -> Criação fácil de aplicações web
 
 from models.Datas import Datas
 from view.src.Base import BasePage
-from view.Stages import AplicationState
 
 class DashboardsPage(BasePage):
     # =================================================================================================================================================
@@ -70,8 +69,6 @@ class DashboardsPage(BasePage):
         self.apply_config()
         
         # Define os estados de sessão iniciais
-        if "stages" not in st.session_state:
-            st.session_state.stages = AplicationState()
         if "df" not in st.session_state:
             st.session_state.df = Datas().importDatasetsOnFirms()
             
